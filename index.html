@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transportation Expense by Income in Washington State</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            width: calc(100% - 300px); /* Adjust the map width to accommodate the legend */
+            height: 100vh;
+            float: left;
+        }
+        .legend {
+            background-color: rgba(0, 0, 0, 0.7); /* Dark background color */
+            border-radius: 5px;
+            padding: 10px;
+            position: absolute;
+            top: 20px; /* Adjust the top position */
+            right: 20px; /* Adjust the right position */
+            color: white; /* Text color */
+            z-index: 1; /* Ensure the legend is above the map */
+        }
+        .legend-label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .legend-item {
+            margin-bottom: 5px;
+        }
+        .legend-color {
+            display: inline-block;
+            width: 20px;
+            height: 10px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div class="legend">
+    <div class="legend-label">Percentage of Income Spent on Transportation</div>
+    <div class="legend-item">
+        <div class="legend-color" style="background-color: rgba(255, 255, 178, 0.7);"></div>
+        0%
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background-color: rgba(254, 204, 92, 0.7);"></div>
+        10%
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background-color: rgba(253, 141, 60, 0.7);"></div>
+        20%
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background-color: rgba(240, 59, 32, 0.7);"></div>
+        30%
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background-color: rgba(189, 0, 38, 0.7);"></div>
+        40%
+    </div>
+</div>
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1Ijoic2JhaW5zMiIsImEiOiJjbGpoamZhYmMwaXUzM2xxZ2dqaGM5eGJrIn0.w__oL-gnTQ1h2AZMkAX2iQ';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [-120.5, 47.3], // Longitude, latitude of Washington state
+        zoom: 6 // Adjust the zoom level as needed
+    });
+
+    map.on('load', function () {
+        map.addSource('income-expense', {
+            type: 'geojson',
+            data: 'assets/Transportation_Expense_(Current_Version).geojson'
+        });
+
+        map.addLayer({
+            id: 'income-expense-layer',
+            type: 'fill',
+            source: 'income-expense',
+            paint: {
+                'fill-color': [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'Percent_Income_Spent'],
+                    0, 'rgba(255, 255, 178, 0.7)',
+                    10, 'rgba(254, 204, 92, 0.7)',
+                    20, 'rgba(253, 141, 60, 0.7)',
+                    30, 'rgba(240, 59, 32, 0.7)',
+                    40, 'rgba(189, 0, 38, 0.7)'
+                ],
+                'fill-opacity': 0.7
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
+
