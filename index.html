@@ -68,6 +68,11 @@
     </div>
 </div>
 
+<div>
+    <label for="hospital-toggle">Hospitals:</label>
+    <input type="checkbox" id="hospital-toggle" checked>
+</div>
+
 <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
 <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
 <script>
@@ -76,13 +81,24 @@
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v11',
         center: [-120.5, 47.3], // Longitude, latitude of Washington state
-        zoom: 6 // Adjust the zoom level as needed
+        zoom: 6// Adjust the zoom level as needed
+    });
+
+    // Add a hospital layer toggle
+    var hospitalLayerVisible = true;
+    document.getElementById('hospital-toggle').addEventListener('change', function () {
+        hospitalLayerVisible = this.checked;
+        if (hospitalLayerVisible) {
+            map.setLayoutProperty('hospital-layer', 'visibility', 'visible');
+        } else {
+            map.setLayoutProperty('hospital-layer', 'visibility', 'none');
+        }
     });
 
     map.on('load', function () {
         map.addSource('income-expense', {
             type: 'geojson',
-            data: 'assets/Transportation_Expense_(Current_Version).geojson'
+            data: 'assets/Transportation_Expense.geojson'
         });
 
         map.addLayer({
@@ -103,9 +119,27 @@
                 'fill-opacity': 0.7
             }
         });
+
+        // Add hospital layer
+        map.addLayer({
+            id: 'hospital-layer',
+            type: 'circle',
+            source: {
+                type: 'geojson',
+                data: 'assets/hospitals.geojson' // Path to your hospital locations GeoJSON file
+            },
+            paint: {
+                'circle-radius': 2.5,
+                'circle-color': 'white',
+                'circle-stroke-color': 'red',
+                'circle-stroke-width': 1
+            },
+            layout: {
+                visibility: hospitalLayerVisible ? 'visible' : 'none'
+            }
+        });
     });
 </script>
 
 </body>
 </html>
-
