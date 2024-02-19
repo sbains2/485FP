@@ -40,19 +40,19 @@
         }
 
         .toggle-container {
-            background-color: rgba(0, 0, 0, 0.7); /* Dark background color */
-            border-radius: 5px; /* Rounded corners */
-            padding: 10px; /* Padding around the content */
-            position: fixed; /* Fixed positioning */
-            top: 50%; /* Position it vertically in the middle */
-            right: 20px; /* Position it 20px from the right edge */
-            transform: translateY(-50%); /* Center it vertically */
-            color: white; /* Text color */
+            background-color: rgba(0, 0, 0, 0.7); 
+            border-radius: 5px; 
+            padding: 10px; 
+            position: fixed; 
+            top: 50%; 
+            right: 20px; 
+            transform: translateY(-50%); 
+            color: white; 
             z-index: 1; /* Ensure it's above other content */
         }
 
         .toggle-container > div {
-            margin-bottom: 5px; /* Adjust as needed */
+            margin-bottom: 5px;
         }
 
 
@@ -207,90 +207,6 @@
             }
         });
 
-        // Add hospital source
-        map.addSource('hospitals', {
-            type: 'geojson',
-            data: 'assets/Hospitals.geojson',
-            cluster: true,
-            clusterMaxZoom: 14, // Max zoom to cluster points on
-            clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
-        });
-
-        // Add hospital layer clusters
-        map.addLayer({
-            id: 'clusters',
-            type: 'circle',
-            source: 'hospitals',
-            filter: ['has', 'point_count'],
-            paint: {
-                'circle-color': [
-                    'step',
-                    ['get', 'point_count'],
-                    'rgba(81, 187, 214, 0.7)', // Color for clusters with less than 10 points
-                    10,
-                    'rgba(241, 240, 117, 0.7)', // Color for clusters with 10 to 20 points
-                    20,
-                    'rgba(242, 140, 177, 0.7)' // Color for clusters with more than 20 points
-                ],
-                'circle-radius': [
-                    'step',
-                    ['get', 'point_count'],
-                    15, // Radius for clusters with less than 10 points
-                    10,
-                    20, // Radius for clusters with 10 to 20 points
-                    20,
-                    25 // Radius for clusters with more than 20 points
-                ],
-                'circle-opacity': 0.8
-            },
-            layout: {
-                visibility: hospitalLayerVisible ? 'visible' : 'none'
-            }
-        });
-
-        // Add count for hospitals
-        map.addLayer({
-            id: 'cluster-count',
-            type: 'symbol',
-            source: 'hospitals',
-            filter: ['has', 'point_count'],
-            layout: {
-                'text-field': ['get', 'point_count_abbreviated'],
-                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                'text-size': 12
-            },
-        });
-
-        // Add hospital points unclustered
-        map.addLayer({
-            id: 'unclustered-point',
-            type: 'circle',
-            source: 'hospitals',
-            filter: ['!', ['has', 'point_count']],
-            paint: {
-                'circle-color': '#11b4da',
-                'circle-radius': 4,
-                'circle-stroke-width': 1,
-                'circle-stroke-color': '#fff'
-            },
-            layout: {
-                visibility: hospitalLayerVisible ? 'visible' : 'none'
-            }
-        });
-
-        document.getElementById('hospital-toggle').addEventListener('change', function () {
-            hospitalLayerVisible = this.checked;
-            if (map.getLayer('clusters')) {
-                map.setLayoutProperty('clusters', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
-            }
-            if (map.getLayer('cluster-count')) {
-                map.setLayoutProperty('cluster-count', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
-            }
-            if (map.getLayer('unclustered-point')) {
-                map.setLayoutProperty('unclustered-point', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
-            }
-        });
-
         // Add transit stops layer
         map.addSource('transit-stops', {
             type: 'geojson',
@@ -314,6 +230,89 @@
             },
             layout: {
                 visibility: transitStopLayerVisible ? 'visible' : 'none'
+            }
+        });
+
+        // Add hospital source
+        map.addSource('hospitals', {
+            type: 'geojson',
+            data: 'assets/Hospitals.geojson',
+            cluster: true,
+            clusterMaxZoom: 14,
+            clusterRadius: 50 
+        });
+
+        // Add hospital layer clusters
+        map.addLayer({
+            id: 'clusters',
+            type: 'circle',
+            source: 'hospitals',
+            filter: ['has', 'point_count'],
+            paint: {
+                'circle-color': [
+                    'step',
+                    ['get', 'point_count'],
+                    '#f9886c', 
+                    10,
+                    '#fbb03b',
+                    20,
+                    '#56b881'
+                ],
+                'circle-radius': [
+                    'step',
+                    ['get', 'point_count'],
+                    10, // Smallest points
+                    15, // Middle points
+                    20  // Largest points
+                ],
+                'circle-opacity': 0.8
+            },
+            layout: {
+                visibility: hospitalLayerVisible ? 'visible' : 'none'
+            },
+        });
+
+
+        // Add count for hospitals
+        map.addLayer({
+            id: 'cluster-count',
+            type: 'symbol',
+            source: 'hospitals',
+            filter: ['has', 'point_count'],
+            layout: {
+                'text-field': ['get', 'point_count_abbreviated'],
+                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                'text-size': 12
+            },
+        });
+
+        // Add hospital points unclustered
+        map.addLayer({
+            id: 'unclustered-point',
+            type: 'circle',
+            source: 'hospitals',
+            filter: ['!', ['has', 'point_count']],
+            paint: {
+                'circle-color': '#f9886c',
+                'circle-radius': 4,
+                'circle-stroke-width': 1,
+                'circle-stroke-color': '#fff'
+            },
+            layout: {
+                visibility: hospitalLayerVisible ? 'visible' : 'none'
+            }
+        });
+
+        document.getElementById('hospital-toggle').addEventListener('change', function () {
+            hospitalLayerVisible = this.checked;
+            if (map.getLayer('clusters')) {
+                map.setLayoutProperty('clusters', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
+            }
+            if (map.getLayer('cluster-count')) {
+                map.setLayoutProperty('cluster-count', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
+            }
+            if (map.getLayer('unclustered-point')) {
+                map.setLayoutProperty('unclustered-point', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
             }
         });
 
