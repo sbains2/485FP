@@ -119,6 +119,11 @@
     <input type="checkbox" id="hospital-toggle" checked>
 </div>
 
+<div>
+    <label for="transit-stop-toggle">Transit Stops:</label>
+    <input type="checkbox" id="transit-stop-toggle" checked>
+</div>
+
 <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
 <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
 <script>
@@ -138,6 +143,17 @@
             map.setLayoutProperty('hospital-layer', 'visibility', 'visible');
         } else {
             map.setLayoutProperty('hospital-layer', 'visibility', 'none');
+        }
+    });
+
+    // Add transit stop layer toggle
+    var transitStopLayerVisible = true;
+    document.getElementById('transit-stop-toggle').addEventListener('change', function () {
+        transitStopLayerVisible = this.checked;
+        if (transitStopLayerVisible) {
+            map.setLayoutProperty('transit-stops-layer', 'visibility', 'visible');
+        } else {
+            map.setLayoutProperty('transit-stops-layer', 'visibility', 'none');
         }
     });
 
@@ -185,6 +201,32 @@
             },
             layout: {
                 visibility: hospitalLayerVisible ? 'visible' : 'none'
+            }
+        });
+
+        // Add transit stops layer
+        map.addSource('transit-stops', {
+            type: 'geojson',
+            data: 'assets/Transit_Stops.geojson' // Path to your transit stops GeoJSON file
+        });
+
+        map.addLayer({
+            id: 'transit-stops-layer',
+            type: 'circle',
+            source: 'transit-stops',
+            paint: {
+                'circle-radius': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    8, 1, // Adjust circle size at zoom level 8
+                    16, 4 // Adjust circle size at zoom level 16
+                ],
+                'circle-color': 'rgba(0, 128, 255, 0.7)', // Adjust color and opacity
+                'circle-opacity': 0.8
+            },
+            layout: {
+                visibility: transitStopLayerVisible ? 'visible' : 'none'
             }
         });
 
