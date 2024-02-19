@@ -289,6 +289,7 @@
             if (map.getLayer('unclustered-point')) {
                 map.setLayoutProperty('unclustered-point', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
             }
+        });
 
         // Add transit stops layer
         map.addSource('transit-stops', {
@@ -375,8 +376,6 @@
         const menu = document.getElementById('menu');
         menu.appendChild(link);
         }
-        });
-
     });
 </script>
 </body>
