@@ -38,10 +38,56 @@
             height: 10px;
             margin-right: 5px;
         }
+        /* layer menu */
+        #menu {
+            background: rgba(0, 0, 0, 0.7);
+            position: absolute;
+            z-index: 1;
+            bottom: 20px;
+            right: 20px;
+            border-radius: 3px;
+            width: 120px;
+            border: 1px solid rgba(0, 0, 0, 0.4);
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        /* each layer on the menu */
+        #menu a {
+            font-size: 13px;
+            color: white;
+            display: block;
+            margin: 0;
+            padding: 0;
+            padding: 10px;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        /* the last item of the layer items will not include a seperator */
+        #menu a:last-child {
+            border: none;
+        }
+
+        /* change color and background color while a pointer is on an hybrid link. */
+        #menu a:hover {
+            background-color: #f8f8f8;
+            color: #404040;
+        }
+
+        #menu a.active {
+            background-color: #3887be;
+            color: #ffffff;
+        }
+
+        #menu a.active:hover {
+            background: #3074a4;
+        }
     </style>
 </head>
 <body>
 
+<nav id="menu"></nav>
 <div id="map"></div>
 
 <div class="legend">
@@ -105,6 +151,9 @@
             id: 'income-expense-layer',
             type: 'fill',
             source: 'income-expense',
+            'layout': {
+                    'visibility': 'none'
+            },
             paint: {
                 'fill-color': [
                     'interpolate',
@@ -138,6 +187,67 @@
                 visibility: hospitalLayerVisible ? 'visible' : 'none'
             }
         });
+
+        // socially vulnerable layer
+        map.addSource('social-vulnerable', {
+            type: 'geojson',
+            data: 'assets/social_vulnerable.geojson'
+        });
+
+        map.addLayer({
+            'id': 'social-vulnerable-layer',
+            'type': 'fill',
+            'source': 'social-vulnerable',
+            'layout': {
+                    'visibility': 'none'
+            },
+            'paint': {
+                'fill-color': [
+                    'step',
+                    ['get', 'Rank'],
+                    '#deebf7',
+                    9,          // below rank 9
+                    '#9ecae1',
+                    10,         // below rank 10
+                    '#3182bd',
+                    11,         // rank 10
+                    '#000000',  // else if, placeholder color
+                ],
+                'fill-outline-color': '#000000',
+                'fill-opacity': 0.75,
+            }
+        });
+
+        // layer toggle code
+        // inumerate layer ids
+        const toggleableLayerIds = ['income-expense-layer', 'social-vulnerable-layer'];
+
+        // layer links
+        for (const layerId of toggleableLayerIds) {
+        const link = document.createElement('a');
+        link.href = '#';
+        link.textContent = layerId;
+        link.className = 'active'; // initial
+
+        link.onclick = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const visibility = map.getLayoutProperty(layerId, 'visibility');
+            if (visibility === 'visible') {
+            this.className = ''; // remove active
+            map.setLayoutProperty(layerId, 'visibility', 'none');
+            } else {
+            this.className = 'active'; // add active
+            map.setLayoutProperty(layerId, 'visibility', 'visible');
+            }
+        };
+
+        // link to menu/legend
+        const menu = document.getElementById('menu');
+        menu.appendChild(link);
+        }
+
     });
 </script>
 
