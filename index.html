@@ -38,6 +38,26 @@
             height: 10px;
             margin-right: 5px;
         }
+
+        .toggle-container {
+            background-color: rgba(0, 0, 0, 0.7); /* Dark background color */
+            border-radius: 5px; /* Rounded corners */
+            padding: 10px; /* Padding around the content */
+            position: fixed; /* Fixed positioning */
+            top: 50%; /* Position it vertically in the middle */
+            right: 20px; /* Position it 20px from the right edge */
+            transform: translateY(-50%); /* Center it vertically */
+            color: white; /* Text color */
+            z-index: 1; /* Ensure it's above other content */
+        }
+
+        .toggle-container > div {
+            margin-bottom: 5px; /* Adjust as needed */
+        }
+
+
+
+
         /* layer menu */
         #menu {
             background: rgba(0, 0, 0, 0.7);
@@ -114,14 +134,16 @@
     </div>
 </div>
 
-<div>
-    <label for="hospital-toggle">Hospitals:</label>
-    <input type="checkbox" id="hospital-toggle" checked>
-</div>
+<div class="toggle-container">
+    <div>
+        <label for="hospital-toggle">Hospitals:</label>
+        <input type="checkbox" id="hospital-toggle" checked>
+    </div>
 
-<div>
-    <label for="transit-stop-toggle">Transit Stops:</label>
-    <input type="checkbox" id="transit-stop-toggle" checked>
+    <div>
+        <label for="transit-stop-toggle">Transit Stops:</label>
+        <input type="checkbox" id="transit-stop-toggle" checked>
+    </div>
 </div>
 
 <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
@@ -185,24 +207,88 @@
             }
         });
 
-        // Add hospital layer
+        // Add hospital source
+        map.addSource('hospitals', {
+            type: 'geojson',
+            data: 'assets/Hospitals.geojson',
+            cluster: true,
+            clusterMaxZoom: 14, // Max zoom to cluster points on
+            clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
+        });
+
+        // Add hospital layer clusters
         map.addLayer({
-            id: 'hospital-layer',
+            id: 'clusters',
             type: 'circle',
-            source: {
-                type: 'geojson',
-                data: 'assets/hospitals.geojson' // Path to your hospital locations GeoJSON file
-            },
+            source: 'hospitals',
+            filter: ['has', 'point_count'],
             paint: {
-                'circle-radius': 2.5,
-                'circle-color': 'white',
-                'circle-stroke-color': 'red',
-                'circle-stroke-width': 1
+                'circle-color': [
+                    'step',
+                    ['get', 'point_count'],
+                    'rgba(81, 187, 214, 0.7)', // Color for clusters with less than 10 points
+                    10,
+                    'rgba(241, 240, 117, 0.7)', // Color for clusters with 10 to 20 points
+                    20,
+                    'rgba(242, 140, 177, 0.7)' // Color for clusters with more than 20 points
+                ],
+                'circle-radius': [
+                    'step',
+                    ['get', 'point_count'],
+                    15, // Radius for clusters with less than 10 points
+                    10,
+                    20, // Radius for clusters with 10 to 20 points
+                    20,
+                    25 // Radius for clusters with more than 20 points
+                ],
+                'circle-opacity': 0.8
             },
             layout: {
                 visibility: hospitalLayerVisible ? 'visible' : 'none'
             }
         });
+
+        // Add count for hospitals
+        map.addLayer({
+            id: 'cluster-count',
+            type: 'symbol',
+            source: 'hospitals',
+            filter: ['has', 'point_count'],
+            layout: {
+                'text-field': ['get', 'point_count_abbreviated'],
+                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                'text-size': 12
+            },
+        });
+
+        // Add hospital points unclustered
+        map.addLayer({
+            id: 'unclustered-point',
+            type: 'circle',
+            source: 'hospitals',
+            filter: ['!', ['has', 'point_count']],
+            paint: {
+                'circle-color': '#11b4da',
+                'circle-radius': 4,
+                'circle-stroke-width': 1,
+                'circle-stroke-color': '#fff'
+            },
+            layout: {
+                visibility: hospitalLayerVisible ? 'visible' : 'none'
+            }
+        });
+
+        document.getElementById('hospital-toggle').addEventListener('change', function () {
+            hospitalLayerVisible = this.checked;
+            if (map.getLayer('clusters')) {
+                map.setLayoutProperty('clusters', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
+            }
+            if (map.getLayer('cluster-count')) {
+                map.setLayoutProperty('cluster-count', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
+            }
+            if (map.getLayer('unclustered-point')) {
+                map.setLayoutProperty('unclustered-point', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
+            }
 
         // Add transit stops layer
         map.addSource('transit-stops', {
@@ -289,9 +375,9 @@
         const menu = document.getElementById('menu');
         menu.appendChild(link);
         }
+        });
 
     });
 </script>
-
 </body>
 </html>
