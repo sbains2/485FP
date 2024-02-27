@@ -65,15 +65,12 @@
             z-index: 1;
             bottom: 20px;
             right: 20px;
-            border-radius: 3px;
-            width: 120px;
-            border: 1px solid rgba(0, 0, 0, 0.4);
-            font-family: 'Open Sans', sans-serif;
+            border-radius: 5px;
+            width: 160px;
         }
 
         /* each layer on the menu */
         #menu a {
-            font-size: 13px;
             color: white;
             display: block;
             margin: 0;
@@ -91,17 +88,19 @@
 
         /* change color and background color while a pointer is on an hybrid link. */
         #menu a:hover {
-            background-color: #f8f8f8;
+            background-color: #808080;
             color: #404040;
         }
 
         #menu a.active {
-            background-color: #3887be;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 5px; 
+            padding: 10px; 
             color: #ffffff;
         }
 
         #menu a.active:hover {
-            background: #3074a4;
+            background: #808080;
         }
     </style>
 </head>
@@ -323,7 +322,7 @@
         });
 
         map.addLayer({
-            'id': 'social-vulnerable-layer',
+            'id': 'Socially Vulnerable',
             'type': 'fill',
             'source': 'social-vulnerable',
             'layout': {
@@ -341,21 +340,19 @@
                     11,         // rank 10
                     '#000000',  // else if, placeholder color
                 ],
-                'fill-outline-color': '#000000',
-                'fill-opacity': 0.75,
+                'fill-opacity': 0.7,
             }
         });
-
-        // layer toggle code
+ 
         // inumerate layer ids
-        const toggleableLayerIds = ['income-expense-layer', 'social-vulnerable-layer'];
+        const toggleableLayerIds = ['income-expense-layer', 'Socially Vulnerable'];
 
         // layer links
         for (const layerId of toggleableLayerIds) {
         const link = document.createElement('a');
         link.href = '#';
         link.textContent = layerId;
-        link.className = 'active'; // initial
+        // link.className = 'active'; // initial
 
         link.onclick = function (e) {
             e.preventDefault();
