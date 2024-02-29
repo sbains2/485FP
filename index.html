@@ -37,10 +37,75 @@
             height: 10px;
             margin-right: 5px;
         }
+
+        .toggle-container {
+            background-color: rgba(0, 0, 0, 0.7); 
+            border-radius: 5px; 
+            padding: 10px; 
+            position: fixed; 
+            top: 50%; 
+            right: 20px; 
+            transform: translateY(-50%); 
+            color: white; 
+            z-index: 1; /* Ensure it's above other content */
+        }
+
+        .toggle-container > div {
+            margin-bottom: 5px;
+        }
+
+
+
+
+        /* layer menu */
+        #menu {
+            background: rgba(0, 0, 0, 0.7);
+            position: absolute;
+            z-index: 1;
+            bottom: 20px;
+            right: 20px;
+            border-radius: 5px;
+            width: 160px;
+        }
+
+        /* each layer on the menu */
+        #menu a {
+            color: white;
+            display: block;
+            margin: 0;
+            padding: 0;
+            padding: 10px;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        /* the last item of the layer items will not include a seperator */
+        #menu a:last-child {
+            border: none;
+        }
+
+        /* change color and background color while a pointer is on an hybrid link. */
+        #menu a:hover {
+            background-color: #808080;
+            color: #404040;
+        }
+
+        #menu a.active {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 5px; 
+            padding: 10px; 
+            color: #ffffff;
+        }
+
+        #menu a.active:hover {
+            background: #808080;
+        }
     </style>
 </head>
 <body>
 
+<nav id="menu"></nav>
 <div id="map"></div>
 
 <div class="legend">
@@ -67,9 +132,16 @@
     </div>
 </div>
 
-<div>
-    <label for="hospital-toggle">Hospitals:</label>
-    <input type="checkbox" id="hospital-toggle" checked>
+<div class="toggle-container">
+    <div>
+        <label for="hospital-toggle">Hospitals:</label>
+        <input type="checkbox" id="hospital-toggle" checked>
+    </div>
+
+    <div>
+        <label for="transit-stop-toggle">Transit Stops:</label>
+        <input type="checkbox" id="transit-stop-toggle" checked>
+    </div>
 </div>
 
 <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
@@ -94,6 +166,17 @@
         }
     });
 
+    // Add transit stop layer toggle
+    var transitStopLayerVisible = true;
+    document.getElementById('transit-stop-toggle').addEventListener('change', function () {
+        transitStopLayerVisible = this.checked;
+        if (transitStopLayerVisible) {
+            map.setLayoutProperty('transit-stops-layer', 'visibility', 'visible');
+        } else {
+            map.setLayoutProperty('transit-stops-layer', 'visibility', 'none');
+        }
+    });
+
     map.on('load', function () {
         map.addSource('income-expense', {
             type: 'geojson',
@@ -104,6 +187,9 @@
             id: 'income-expense-layer',
             type: 'fill',
             source: 'income-expense',
+            'layout': {
+                    'visibility': 'none'
+            },
             paint: {
                 'fill-color': [
                     'interpolate',
@@ -119,26 +205,173 @@
             }
         });
 
-        // Add hospital layer
+        // Add transit stops layer
+        map.addSource('transit-stops', {
+            type: 'geojson',
+            data: 'assets/Transit_Stops.geojson' // Path to your transit stops GeoJSON file
+        });
+
         map.addLayer({
-            id: 'hospital-layer',
+            id: 'transit-stops-layer',
             type: 'circle',
-            source: {
-                type: 'geojson',
-                data: 'assets/hospitals.geojson' // Path to your hospital locations GeoJSON file
-            },
+            source: 'transit-stops',
             paint: {
-                'circle-radius': 2.5,
-                'circle-color': 'white',
-                'circle-stroke-color': 'red',
-                'circle-stroke-width': 1
+                'circle-radius': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    8, 1, // Adjust circle size at zoom level 8
+                    16, 4 // Adjust circle size at zoom level 16
+                ],
+                'circle-color': 'rgba(0, 128, 255, 0.7)', // Adjust color and opacity
+                'circle-opacity': 0.8
+            },
+            layout: {
+                visibility: transitStopLayerVisible ? 'visible' : 'none'
+            }
+        });
+
+        // Add hospital source
+        map.addSource('hospitals', {
+            type: 'geojson',
+            data: 'assets/Hospitals.geojson',
+            cluster: true,
+            clusterMaxZoom: 14,
+            clusterRadius: 50 
+        });
+
+        // Add hospital layer clusters
+        map.addLayer({
+            id: 'clusters',
+            type: 'circle',
+            source: 'hospitals',
+            filter: ['has', 'point_count'],
+            paint: {
+                'circle-color': [
+                    'step',
+                    ['get', 'point_count'],
+                    '#f9886c', 
+                    10,
+                    '#fbb03b',
+                    20,
+                    '#56b881'
+                ],
+                'circle-radius': [
+                    'step',
+                    ['get', 'point_count'],
+                    10, // Smallest points
+                    15, // Middle points
+                    20  // Largest points
+                ],
+                'circle-opacity': 0.8
+            },
+            layout: {
+                visibility: hospitalLayerVisible ? 'visible' : 'none'
+            },
+        });
+
+
+        // Add count for hospitals
+        map.addLayer({
+            id: 'cluster-count',
+            type: 'symbol',
+            source: 'hospitals',
+            filter: ['has', 'point_count'],
+            layout: {
+                'text-field': ['get', 'point_count_abbreviated'],
+                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                'text-size': 12
+            },
+        });
+
+        // Add hospital points unclustered
+        map.addLayer({
+            id: 'unclustered-point',
+            type: 'circle',
+            source: 'hospitals',
+            filter: ['!', ['has', 'point_count']],
+            paint: {
+                'circle-color': '#f9886c',
+                'circle-radius': 4,
+                'circle-stroke-width': 1,
+                'circle-stroke-color': '#fff'
             },
             layout: {
                 visibility: hospitalLayerVisible ? 'visible' : 'none'
             }
         });
+
+        document.getElementById('hospital-toggle').addEventListener('change', function () {
+            hospitalLayerVisible = this.checked;
+            if (map.getLayer('clusters')) {
+                map.setLayoutProperty('clusters', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
+            }
+            if (map.getLayer('cluster-count')) {
+                map.setLayoutProperty('cluster-count', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
+            }
+            if (map.getLayer('unclustered-point')) {
+                map.setLayoutProperty('unclustered-point', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
+            }
+        });
+
+        // socially vulnerable layer
+        map.addSource('social-vulnerable', {
+            type: 'geojson',
+            data: 'assets/social_vulnerable.geojson'
+        });
+
+        map.addLayer({
+            'id': 'Socially Vulnerable',
+            'type': 'fill',
+            'source': 'social-vulnerable',
+            'layout': {
+                    'visibility': 'none'
+            },
+            'paint': {
+                'fill-color': [
+                    'step',
+                    ['get', 'Rank'],
+                    '#deebf7',
+                    9,          // below rank 9
+                    '#9ecae1',
+                    10,         // below rank 10
+                    '#3182bd',
+                    11,         // rank 10
+                    '#000000',  // else if, placeholder color
+                ],
+                'fill-opacity': 0.7,
+            }
+        });
+ 
+        // inumerate layer ids
+        const toggleableLayerIds = ['income-expense-layer', 'Socially Vulnerable'];
+
+        // layer links
+        for (const layerId of toggleableLayerIds) {
+        const link = document.createElement('a');
+        link.href = '#';
+        link.textContent = layerId;
+        // link.className = 'active'; // initial
+
+        link.onclick = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const visibility = map.getLayoutProperty(layerId, 'visibility');
+            if (visibility === 'visible') {
+            this.className = ''; // remove active
+            map.setLayoutProperty(layerId, 'visibility', 'none');
+            } else {
+            this.className = 'active'; // add active
+            map.setLayoutProperty(layerId, 'visibility', 'visible');
+            }
+        };
+
+        // link to menu/legend
+        const menu = document.getElementById('menu');
+        menu.appendChild(link);
+        }
     });
 </script>
-
 </body>
 </html>
