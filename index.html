@@ -11,18 +11,18 @@
             font-family: Arial, sans-serif;
         }
         #map {
-            width: 100%; /* Adjust the width to fill the entire screen */
+            width: 100%;
             height: 100vh;
         }
         .legend {
-            background-color: rgba(0, 0, 0, 0.7); /* Dark background color */
+            background-color: rgba(0, 0, 0, 0.7);
             border-radius: 5px;
             padding: 10px;
             position: absolute;
-            top: 20px; /* Adjust the top position */
-            right: 20px; /* Adjust the right position */
-            color: white; /* Text color */
-            z-index: 1; /* Ensure the legend is above the map */
+            top: 20px;
+            left: 20px;
+            color: white;
+            z-index: 1;
         }
         .legend-label {
             margin-bottom: 5px;
@@ -37,27 +37,20 @@
             height: 10px;
             margin-right: 5px;
         }
-
         .toggle-container {
-            background-color: rgba(0, 0, 0, 0.7); 
-            border-radius: 5px; 
-            padding: 10px; 
-            position: fixed; 
-            top: 50%; 
-            right: 20px; 
-            transform: translateY(-50%); 
-            color: white; 
-            z-index: 1; /* Ensure it's above other content */
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+            padding: 10px;
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            color: white;
+            z-index: 1;
         }
-
         .toggle-container > div {
             margin-bottom: 5px;
         }
-
-
-
-
-        /* layer menu */
         #menu {
             background: rgba(0, 0, 0, 0.7);
             position: absolute;
@@ -67,8 +60,6 @@
             border-radius: 5px;
             width: 160px;
         }
-
-        /* each layer on the menu */
         #menu a {
             color: white;
             display: block;
@@ -79,25 +70,19 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.25);
             text-align: center;
         }
-
-        /* the last item of the layer items will not include a seperator */
         #menu a:last-child {
             border: none;
         }
-
-        /* change color and background color while a pointer is on an hybrid link. */
         #menu a:hover {
             background-color: #808080;
             color: #404040;
         }
-
         #menu a.active {
             background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 5px; 
-            padding: 10px; 
+            border-radius: 5px;
+            padding: 10px;
             color: #ffffff;
         }
-
         #menu a.active:hover {
             background: #808080;
         }
@@ -108,7 +93,7 @@
 <nav id="menu"></nav>
 <div id="map"></div>
 
-<div class="legend">
+<div class="legend" id="income-expense-legend">
     <div class="legend-label">Percentage of Income Spent on Transportation</div>
     <div class="legend-item">
         <div class="legend-color" style="background-color: rgba(255, 255, 178, 0.7);"></div>
@@ -134,13 +119,18 @@
 
 <div class="toggle-container">
     <div>
-        <label for="hospital-toggle">Hospitals:</label>
+        <label for="hospital-transit-toggle">Hospitals:</label>
         <input type="checkbox" id="hospital-toggle" checked>
     </div>
 
     <div>
-        <label for="transit-stop-toggle">Transit Stops:</label>
+        <label for="hospital-transit-toggle">Transit Stops:</label>
         <input type="checkbox" id="transit-stop-toggle" checked>
+    </div>
+
+    <div>
+        <label for="income-expense-toggle">Income Expense:</label>
+        <input type="checkbox" id="income-expense-toggle" checked>
     </div>
 </div>
 
@@ -150,61 +140,13 @@
     mapboxgl.accessToken = 'pk.eyJ1Ijoic2JhaW5zMiIsImEiOiJjbGpoamZhYmMwaXUzM2xxZ2dqaGM5eGJrIn0.w__oL-gnTQ1h2AZMkAX2iQ';
     var map = new mapboxgl.Map({
         container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v11',
+        style: 'mapbox://styles/mapbox/navigation-night-v1',
         center: [-120.5, 47.3], // Longitude, latitude of Washington state
         zoom: 6// Adjust the zoom level as needed
     });
 
-    // Add a hospital layer toggle
-    var hospitalLayerVisible = true;
-    document.getElementById('hospital-toggle').addEventListener('change', function () {
-        hospitalLayerVisible = this.checked;
-        if (hospitalLayerVisible) {
-            map.setLayoutProperty('hospital-layer', 'visibility', 'visible');
-        } else {
-            map.setLayoutProperty('hospital-layer', 'visibility', 'none');
-        }
-    });
-
-    // Add transit stop layer toggle
-    var transitStopLayerVisible = true;
-    document.getElementById('transit-stop-toggle').addEventListener('change', function () {
-        transitStopLayerVisible = this.checked;
-        if (transitStopLayerVisible) {
-            map.setLayoutProperty('transit-stops-layer', 'visibility', 'visible');
-        } else {
-            map.setLayoutProperty('transit-stops-layer', 'visibility', 'none');
-        }
-    });
-
+    // Add layers
     map.on('load', function () {
-        map.addSource('income-expense', {
-            type: 'geojson',
-            data: 'assets/Transportation_Expense.geojson'
-        });
-
-        map.addLayer({
-            id: 'income-expense-layer',
-            type: 'fill',
-            source: 'income-expense',
-            'layout': {
-                    'visibility': 'none'
-            },
-            paint: {
-                'fill-color': [
-                    'interpolate',
-                    ['linear'],
-                    ['get', 'Percent_Income_Spent'],
-                    0, 'rgba(255, 255, 178, 0.7)',
-                    10, 'rgba(254, 204, 92, 0.7)',
-                    20, 'rgba(253, 141, 60, 0.7)',
-                    30, 'rgba(240, 59, 32, 0.7)',
-                    40, 'rgba(189, 0, 38, 0.7)'
-                ],
-                'fill-opacity': 0.7
-            }
-        });
-
         // Add transit stops layer
         map.addSource('transit-stops', {
             type: 'geojson',
@@ -270,7 +212,6 @@
             },
         });
 
-
         // Add count for hospitals
         map.addLayer({
             id: 'cluster-count',
@@ -301,75 +242,71 @@
             }
         });
 
-        document.getElementById('hospital-toggle').addEventListener('change', function () {
-            hospitalLayerVisible = this.checked;
-            if (map.getLayer('clusters')) {
-                map.setLayoutProperty('clusters', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
-            }
-            if (map.getLayer('cluster-count')) {
-                map.setLayoutProperty('cluster-count', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
-            }
-            if (map.getLayer('unclustered-point')) {
-                map.setLayoutProperty('unclustered-point', 'visibility', hospitalLayerVisible ? 'visible' : 'none');
-            }
-        });
-
-        // socially vulnerable layer
-        map.addSource('social-vulnerable', {
+        // Income expense layer
+        map.addSource('income-expense', {
             type: 'geojson',
-            data: 'assets/social_vulnerable.geojson'
+            data: 'assets/Transportation_Expense.geojson'
         });
 
         map.addLayer({
-            'id': 'Socially Vulnerable',
-            'type': 'fill',
-            'source': 'social-vulnerable',
+            id: 'income-expense-layer',
+            type: 'fill',
+            source: 'income-expense',
             'layout': {
-                    'visibility': 'none'
+                'visibility': incomeExpenseLayerVisible ? 'visible' : 'none'
             },
-            'paint': {
+            paint: {
                 'fill-color': [
-                    'step',
-                    ['get', 'Rank'],
-                    '#deebf7',
-                    9,          // below rank 9
-                    '#9ecae1',
-                    10,         // below rank 10
-                    '#3182bd',
-                    11,         // rank 10
-                    '#000000',  // else if, placeholder color
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'Percent_Income_Spent'],
+                    0, 'rgba(255, 255, 178, 0.7)',
+                    10, 'rgba(254, 204, 92, 0.7)',
+                    20, 'rgba(253, 141, 60, 0.7)',
+                    30, 'rgba(240, 59, 32, 0.7)',
+                    40, 'rgba(189, 0, 38, 0.7)'
                 ],
-                'fill-opacity': 0.7,
+                'fill-opacity': 0.7
             }
         });
- 
-        // inumerate layer ids
-        const toggleableLayerIds = ['income-expense-layer', 'Socially Vulnerable'];
+    });
 
-        // layer links
-        for (const layerId of toggleableLayerIds) {
-        const link = document.createElement('a');
-        link.href = '#';
-        link.textContent = layerId;
-        // link.className = 'active'; // initial
+    // Add a hospital layer toggle
+    var hospitalLayerVisible = true;
+    document.getElementById('hospital-toggle').addEventListener('change', function () {
+        hospitalLayerVisible = this.checked;
+        if (hospitalLayerVisible) {
+            map.setLayoutProperty('clusters', 'visibility', 'visible');
+            map.setLayoutProperty('cluster-count', 'visibility', 'visible');
+            map.setLayoutProperty('unclustered-point', 'visibility', 'visible');
+        } else {
+            map.setLayoutProperty('clusters', 'visibility', 'none');
+            map.setLayoutProperty('cluster-count', 'visibility', 'none');
+            map.setLayoutProperty('unclustered-point', 'visibility', 'none');
+        }
+    });
 
-        link.onclick = function (e) {
-            e.preventDefault();
-            e.stopPropagation();
+    // Add transit stop layer toggle
+    var transitStopLayerVisible = true;
+    document.getElementById('transit-stop-toggle').addEventListener('change', function () {
+        transitStopLayerVisible = this.checked;
+        if (transitStopLayerVisible) {
+            map.setLayoutProperty('transit-stops-layer', 'visibility', 'visible');
+        } else {
+            map.setLayoutProperty('transit-stops-layer', 'visibility', 'none');
+        }
+    });
 
-            const visibility = map.getLayoutProperty(layerId, 'visibility');
-            if (visibility === 'visible') {
-            this.className = ''; // remove active
-            map.setLayoutProperty(layerId, 'visibility', 'none');
-            } else {
-            this.className = 'active'; // add active
-            map.setLayoutProperty(layerId, 'visibility', 'visible');
-            }
-        };
-
-        // link to menu/legend
-        const menu = document.getElementById('menu');
-        menu.appendChild(link);
+    // Add income expense layer toggle
+    var incomeExpenseLayerVisible = true;
+    document.getElementById('income-expense-toggle').addEventListener('change', function () {
+        incomeExpenseLayerVisible = this.checked;
+        if (incomeExpenseLayerVisible) {
+            map.setLayoutProperty('income-expense-layer', 'visibility', 'visible');
+            document.querySelector('.legend').style.display = 'block'; // Show legend
+        } else {
+            map.setLayoutProperty('income-expense-layer', 'visibility', 'none');
+            document.querySelector('.legend').style.display = 'none'; // Hide legend
         }
     });
 </script>
