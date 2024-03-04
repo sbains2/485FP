@@ -9,9 +9,10 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
+            display: flex;
         }
         #map {
-            width: 100%;
+            flex: 1;
             height: 100vh;
         }
         .legend {
@@ -37,54 +38,19 @@
             height: 10px;
             margin-right: 5px;
         }
-        .toggle-container {
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 5px;
-            padding: 10px;
+        .dashboard-container {
             position: fixed;
-            top: 50%;
+            top: 20%;
             right: 20px;
             transform: translateY(-50%);
-            color: white;
             z-index: 1;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 30px;
+            padding: 30px;
+            color: white;
         }
         .toggle-container > div {
-            margin-bottom: 5px;
-        }
-        #menu {
-            background: rgba(0, 0, 0, 0.7);
-            position: absolute;
-            z-index: 1;
-            bottom: 20px;
-            right: 20px;
-            border-radius: 5px;
-            width: 160px;
-        }
-        #menu a {
-            color: white;
-            display: block;
-            margin: 0;
-            padding: 0;
-            padding: 10px;
-            text-decoration: none;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.25);
-            text-align: center;
-        }
-        #menu a:last-child {
-            border: none;
-        }
-        #menu a:hover {
-            background-color: #808080;
-            color: #404040;
-        }
-        #menu a.active {
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 5px;
-            padding: 10px;
-            color: #ffffff;
-        }
-        #menu a.active:hover {
-            background: #808080;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -117,22 +83,27 @@
     </div>
 </div>
 
-<div class="toggle-container">
-    <div>
-        <label for="hospital-transit-toggle">Hospitals:</label>
-        <input type="checkbox" id="hospital-toggle" checked>
-    </div>
+<div class="dashboard-container">
+    <h2>Toggleable Layers:</h2>
+    <div class="toggle-container">
+        <div>
+            <label for="hospital-toggle">Hospitals:</label>
+            <input type="checkbox" id="hospital-toggle" checked>
+        </div>
 
-    <div>
-        <label for="hospital-transit-toggle">Transit Stops:</label>
-        <input type="checkbox" id="transit-stop-toggle" checked>
-    </div>
+        <div>
+            <label for="transit-stop-toggle">Transit Stops:</label>
+            <input type="checkbox" id="transit-stop-toggle" checked>
+        </div>
 
-    <div>
-        <label for="income-expense-toggle">Income Expense:</label>
-        <input type="checkbox" id="income-expense-toggle" checked>
+        <div>
+            <label for="income-expense-toggle">Income Expense:</label>
+            <input type="checkbox" id="income-expense-toggle" checked>
+        </div>
     </div>
+    <h2>Statistics:</h2>
 </div>
+
 
 <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
 <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
