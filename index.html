@@ -47,6 +47,7 @@
             top: 10px;
             right: 20px;
             z-index: 1;
+            max-width: 400px;
             background-color: rgba(0, 0, 0, 0.7);
             border-radius: 5px;
             padding: 10px;
@@ -126,7 +127,7 @@
         container: 'map',
         style: 'mapbox://styles/mapbox/navigation-night-v1',
         center: [-120.5, 47.3], // Longitude, latitude of Washington state
-        zoom: 6// Adjust the zoom level as needed
+        zoom: 5// Adjust the zoom level as needed
     });
 
     // Add layers
@@ -351,7 +352,7 @@
         // Center coordinates for each census tract
         var centerCoordinates = e.lngLat
         // Zoom into census tract on click
-        map.flyTo({ center: centerCoordinates, zoom : 6 });
+        map.flyTo({ center: centerCoordinates, zoom : 8 });
         // Outline census tract
         var features = map.queryRenderedFeatures(e.point);
         if (features.length > 0) {
