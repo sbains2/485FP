@@ -108,8 +108,10 @@
     </div>
     <h2>Statistics:</h2>
     <h5><a href="https://data.census.gov/table/ACSDT5Y2019.B19081?q=B19081:%20Mean%20Household%20Income%20of%20Quintiles&g=040XX00US53$1400000">Estimations from 2019 Mean Household Income of Quintiles</a></h5>
+    <h5>(click anywhere on the map)</h5>
     <div id="statistics"></div>
     <div id="chart"></div>
+    <div id="chart-popup" class="popup"></div> <!-- Added pop-up element -->
     </div>
 </div>
 
@@ -282,6 +284,12 @@
                     'Remaining Income': 'orange'
                 },
                 groups: [['Transportation Expenses', 'Remaining Income']],
+                labels: {
+                    format: {
+                        'Transportation Expenses': function (v, id, i, j) { return '$' + v; }, // Format transportation expenses with '$'
+                        'Remaining Income': function (v, id, i, j) { return '$' + v; } // Format remaining income with '$'
+                    }
+                }
             },
             axis: {
                 x: {
@@ -294,7 +302,7 @@
                 },
                 y: {
                     label: {
-                        text: 'Total Income',
+                        text: 'Total Income/Expenditures',
                         position: 'outer-middle'
                     },
                     tick: {
@@ -313,14 +321,27 @@
                 lines: {
                     front: false // Move grid lines behind the bars
                 }
+            },
+            tooltip: { // Add tooltip configuration for displaying specific values
+                format: {
+                    title: function (d) {
+                        return categories[d[0].index];
+                    },
+                    value: function (value, ratio, id, index) {
+                        if (id === 'Transportation Expenses') {
+                            return '$' + value.toFixed(2); // Format transportation expenses with '$' and two decimal places
+                        } else if (id === 'Remaining Income') {
+                            return '$' + value.toFixed(2); // Format remaining income with '$' and two decimal places
+                        }
+                        return value;
+                    }
+                }
             }
         });
 
         d3.selectAll('.c3-axis-x-label, .c3-axis-y-label, .c3-axis-x .tick text, .c3-axis-y .tick text, .c3-legend-item text')
         .style('fill', 'white');
     }
-
-
 
 
     // Assuming you have a <div> element with the id "statistics"
