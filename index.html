@@ -326,11 +326,38 @@
     // Assuming you have a <div> element with the id "statistics"
     var statisticsDiv = document.getElementById('statistics');
 
-    // Add click event listener to the map for statistics
     map.on('click', 'income-expense-layer', function (e) {
-        var censusTractName = e.features[0].properties.NAME; // Get the census tract name
-        // Display the census tract name under "Statistics"
-        statisticsDiv.innerHTML = "<p>Percentage of Income Spent on Transportation in Each Income Quintile <br>" + censusTractName + "</p>";
+        // Center coordinates for each census tract
+        var centerCoordinates = e.lngLat
+        // Zoom into census tract on click
+        map.flyTo({ center: centerCoordinates, zoom : 10 });
+        // Outline census tract
+        var features = map.queryRenderedFeatures(e.point);
+        if (features.length > 0) {
+            var feature = features[0];
+
+            if (map.getLayer('outline')) {
+                map.removeLayer('outline');
+                map.removeSource('outline');
+            }
+
+            map.addSource('outline', {
+                'type': 'geojson',
+                'data': feature.toJSON()
+            });
+
+            map.addLayer({
+                'id': 'outline',
+                'type': 'line',
+                'source': 'outline',
+                'paint': {
+                    'line-color': '#000000',
+                    'line-width': 2
+                }
+            });
+        }
+        var censusTractName = e.features[0].properties.NAME;
+        statisticsDiv.innerHTML = "<p>Percentage of Income Spent on Transportation in Each Income Bracket for " + censusTractName + "</p>";
     });
 
     // Add click event listener to the map for chart data
