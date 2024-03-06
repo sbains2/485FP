@@ -330,7 +330,7 @@
         // Center coordinates for each census tract
         var centerCoordinates = e.lngLat
         // Zoom into census tract on click
-        map.flyTo({ center: centerCoordinates, zoom : 10 });
+        map.flyTo({ center: centerCoordinates, zoom : 6 });
         // Outline census tract
         var features = map.queryRenderedFeatures(e.point);
         if (features.length > 0) {
