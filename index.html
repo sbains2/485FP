@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/c3@0.7.20/c3.min.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <script src="https://unpkg.com/@turf/turf@latest/turf.min.js"></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-scale/v1.1.0/mapbox-gl-scale.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-scale/v1.1.0/mapbox-gl-scale.min.js'></script>
+
     <style>
         body {
             margin: 0;
@@ -141,8 +143,14 @@
         zoom: 5// Adjust the zoom level as needed
     });
 
+
     // Add layers
     map.on('load', function () {
+        map.addControl(new mapboxgl.ScaleControl({
+            maxWidth: 200, // Adjust as needed
+            unit: 'imperial' // Use 'metric' for metric units
+        }));
+        
         // Income expense layer
         map.addSource('income-expense', {
             type: 'geojson',
