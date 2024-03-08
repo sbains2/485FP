@@ -182,7 +182,7 @@
         // Add transit stops layer
         map.addSource('transit-stops', {
             type: 'geojson',
-            data: 'assets/Transit_Stops.geojson' // Path to your transit stops GeoJSON file
+            data: 'assets/Transit_Stops.geojson' // Path to transit stops GeoJSON file
         });
 
         map.addLayer({
@@ -364,7 +364,6 @@
     }
 
 
-    // Assuming you have a <div> element with the id "statistics"
     var statisticsDiv = document.getElementById('statistics');
 
     map.on('click', 'income-expense-layer', function (e) {
