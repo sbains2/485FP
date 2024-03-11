@@ -21,3 +21,34 @@ Our project aims to create an interactive dashboard application that will analyz
 ![Image 1 for dashboard](/img/Map_1.png)
 
 ![Image 2 for dashboard](/img/Map_2.png)
+
+## Project Goal:
+
+Details...
+
+## Data Sources:
+
+**Income by Census Tract in 2022 (Census Bureau):**
+<ul>
+ <li>U.S. Census Bureau. (2022). Income by Census Tract in 2022. Retrieved from https://data.census.gov/table/ACSST5Y2022.S1901?g=040XX00US53$1400000</li>
+</ul>
+
+**Hospitals in Washington (WGODP):**
+<ul>
+ <li>Washington State Department of Health. (n.d.). Hospitals in Washington. Retrieved from https://geo.wa.gov/datasets/WADOH::hospitals/explore?location=47.170174%2C-120.675488%2C7.66</li>
+</ul>
+
+**Social Vulnerability Index Layer for 2010 Census Tracts (WGODP):**
+<ul>
+ <li>Washington State Department of Health. (n.d.). Social Vulnerability Index Layer for 2010 Census Tracts. Retrieved from https://geo.wa.gov/datasets/cfbc9657d7b84fa3bd1b6a378314019f_0/explore</li>
+</ul>
+
+**Transit Stops (WGODP):**
+<ul>
+ <li>Washington State Department of Transportation. (n.d.). Transit Stops. Retrieved from https://geo.wa.gov/datasets/WSDOT::wsdot-transit-stops/explore?location=47.179925%2C-120.753984%2C7.62</li>
+</ul>
+
+**Transportation Expense (WGODP):**
+<ul>
+ <li>Washington State Department of Health. (n.d.). Transportation Expense. Retrieved from https://geo.wa.gov/datasets/WADOH::transportation-expense-current-version/explore</li>
+</ul>
