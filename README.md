@@ -26,6 +26,24 @@ Our project aims to create an interactive dashboard application that will analyz
 
 Our project has the emphasis on empowering low-income individuals and vulnerable populations by providing them with access to data that allows advocacy for improved transportation to healthcare services. Through designing this web map, we aim to build the capacity for data driven advocacy as well as raise awareness to policy makers and local authorities to address transportation challenges in low-income areas and promote health equity through highlighting disparities in healthcare access among all income brackets. By focusing on empowerment and community impact, our project strives to ensure equal opportunities for transportation and healthcare services for all, regardless of the income level.
 
+# Utilized libraries
+
+## Mapbox GL JS Library
+- Creates interactive maps with various layers.
+- Allows adding transit stops, hospital clusters, and income expense data
+
+## Mapbox functions
+- `mapboxgl.Map`: Creates a new Mapbox map object.
+- `map.on('load', function() {...})`: Event listener for map loading.
+- `map.addSource()`: Adds data source to the map for layers.
+- `map.addLayer()`: Adds new layers to the map.
+- `map.setLayoutProperty()`: Modifies layout properties of layers.
+
+## C3 & D3
+- **D3**: Powerful library for interactive data visualizations
+- **C3**: Builds on D3 for simplified chart creation 
+
+
 ## Data Sources:
 
 **Income by Census Tract in 2022 (Census Bureau):**
