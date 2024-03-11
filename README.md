@@ -6,7 +6,7 @@
 
 <ul>
   <li><b>Elaine Azul</b></li>
-  <li><b>Sahil Bain</b></li>
+  <li><b>Sahil Bains</b></li>
   <li><b>Badria Kadir</b></li>
   <li><b>NQ Nguyen</b></li>
   <li><b>Edward Park</b></li>
@@ -24,7 +24,7 @@ Our project aims to create an interactive dashboard application that will analyz
 
 ## Project Goal:
 
-Details...
+Our project has the emphasis on empowering low-income individuals and vulnerable populations by providing them with access to data that allows advocacy for improved transportation to healthcare services. Through designing this web map, we aim to build the capacity for data driven advocacy as well as raise awareness to policy makers and local authorities to address transportation challenges in low-income areas and promote health equity through highlighting disparities in healthcare access among all income brackets. By focusing on empowerment and community impact, our project strives to ensure equal opportunities for transportation and healthcare services for all, regardless of the income level.
 
 ## Data Sources:
 
